@@ -20,32 +20,50 @@ df = pd.read_csv(COVID)
 
 app.layout = html.Div([
     dcc.Dropdown(
-    id='country_list',
-    options=[
-        {'label': i, 'value': i} for i in df['Country/Region'].unique()
-    ],
-    multi=True,
-    placeholder="Select a Country",
+        id='country_list',
+        options=[
+            {'label': i, 'value': str(i)} for i in df['Country/Region'].unique()
+        ],
+        multi=False,
+        placeholder="Select a Country",
     ),
-    html.Div([
-        dcc.Graph(id='confirmed')
+    dcc.Graph(id='confirmed')
         
-    ],style = {'width':'50%','float':'left','display': 'inline-block'}),
-    html.Div([
-        dcc.Graph(id='deaths')
-    ],style = {'width':'50%','float':'right','display': 'inline-block'}),
-    html.Div([
-        dcc.Graph(id='recovered')
-    ])
+    #html.Div([
+    #    dcc.Graph(id='deaths')
+    #],style = {'width':'50%','float':'right','display': 'inline-block'}),
+    #html.Div([
+    #    dcc.Graph(id='recovered')
+    #])
 ])
 
-print(i for i in df['Country/Region'].unique())
 @app.callback(
     Output('confirmed','figure'),
     [Input('country_list','value')]
 )
-def update_confirmed(country_list):
-    
+def update_confirmed(country_list):  
+    traces = []
+    traces.append(dict(
+            x = df[df['Country/Region']==country_list]['ObservationDate'],
+            y = df[df['Country/Region']==country_list]['Confirmed'],
+            text=country_list,
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 10,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+        ))
+
+    return {
+        'data' :traces,
+        'layout': dict(
+            xaxis = {'title':'Observation Date'},
+            yaxis = {'title':'Confirmed Cases'},
+            legend={'x': 0, 'y': 1},
+            hovermode='closest'
+        )
+    }
 
 
 
