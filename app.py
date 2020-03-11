@@ -19,26 +19,35 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 df = pd.read_csv(COVID)
 
 app.layout = html.Div([
-    dash_table.DataTable(
-        id = 'covid-table',
-        columns = [
-            {"name":i,"id":i,"selectable":True} for i in df.columns
-        ],
-        data=df.to_dict('records'),
-        editable=True,
-        filter_action="native",
-        sort_action="native",
-        sort_mode="multi",
-        column_selectable="single",
-        row_selectable="multi",
-        selected_columns=[],
-        selected_rows=[],
-        page_action="native",
-        page_current= 0,
-        page_size= 10,
+    dcc.Dropdown(
+    id='country_list',
+    options=[
+        {'label': i, 'value': i} for i in df['Country/Region'].unique()
+    ],
+    multi=True,
+    placeholder="Select a Country",
     ),
-    html.Div(id='datatable-interactivity-container')
+    html.Div([
+        dcc.Graph(id='confirmed')
+        
+    ],style = {'width':'50%','float':'left','display': 'inline-block'}),
+    html.Div([
+        dcc.Graph(id='deaths')
+    ],style = {'width':'50%','float':'right','display': 'inline-block'}),
+    html.Div([
+        dcc.Graph(id='recovered')
+    ])
 ])
+
+print(i for i in df['Country/Region'].unique())
+@app.callback(
+    Output('confirmed','figure'),
+    [Input('country_list','value')]
+)
+def update_confirmed(country_list):
+    
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
