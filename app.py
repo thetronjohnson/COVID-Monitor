@@ -27,6 +27,14 @@ app.layout = html.Div([
         multi=False,
         placeholder="Select a Country",
     ),
+    dcc.Dropdown(
+        id='date',
+        options = [
+            {'label':j,'value':str(j)} for j in df['ObservationDate'].unique()
+        ],
+        multi = False,
+        placeholder = 'Select a Date',
+    ),
     dcc.Graph(id='confirmed'),
     dcc.Graph(id='deaths'),
     dcc.Graph(id='recovered')
@@ -35,13 +43,14 @@ app.layout = html.Div([
 
 @app.callback(
     Output('confirmed','figure'),
-    [Input('country_list','value')]
+    [Input('country_list','value'),
+    Input('date','value')]
 )
-def update_confirmed(country_list):  
+def update_confirmed(country_list,date):  
     traces = []
     traces.append(dict(
             x = df[df['Country/Region']==country_list]['ObservationDate'],
-            y = (df[df['Country/Region']==country_list]['Confirmed']).max(),
+            y = (df[df['ObservationDate']==date]['Confirmed']),
             text=f'{country_list}',
             mode='markers',
             opacity=0.7,
@@ -73,7 +82,7 @@ def update_deaths(country_list):
     traces = []
     traces.append(dict(
             x = df[df['Country/Region']==country_list]['ObservationDate'],
-            y = (df[df['Country/Region']==country_list]['Deaths']).max(),
+            y = (df[df['Country/Region']==country_list]['Deaths']),
             text=f'{country_list}',
             mode='markers',
             opacity=0.7,
@@ -105,7 +114,7 @@ def update_recovered(country_list):
     traces = []
     traces.append(dict(
             x = df[df['Country/Region']==country_list]['ObservationDate'],
-            y = (df[df['Country/Region']==country_list]['Recovered']).max(),
+            y = (df[df['Country/Region']==country_list]['Recovered']),
             text=f'{country_list}',
             mode='markers',
             opacity=0.7,
