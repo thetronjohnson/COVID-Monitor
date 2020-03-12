@@ -27,14 +27,10 @@ app.layout = html.Div([
         multi=False,
         placeholder="Select a Country",
     ),
-    dcc.Graph(id='confirmed')
+    dcc.Graph(id='confirmed'),
+    dcc.Graph(id='deaths'),
+    dcc.Graph(id='recovered')
         
-    #html.Div([
-    #    dcc.Graph(id='deaths')
-    #],style = {'width':'50%','float':'right','display': 'inline-block'}),
-    #html.Div([
-    #    dcc.Graph(id='recovered')
-    #])
 ])
 
 @app.callback(
@@ -45,14 +41,13 @@ def update_confirmed(country_list):
     traces = []
     traces.append(dict(
             x = df[df['Country/Region']==country_list]['ObservationDate'],
-            y = df[df['Country/Region']==country_list]['Confirmed'],
-            text=country_list,
+            y = (df[df['Country/Region']==country_list]['Confirmed']).max(),
+            text=f'{country_list}',
             mode='markers',
             opacity=0.7,
-            marker={
-                'size': 10,
-                'line': {'width': 0.5, 'color': 'white'}
-            },
+            marker=dict(
+                    color='rgb(55, 83, 109)'
+            ),
         ))
 
     return {
@@ -60,8 +55,78 @@ def update_confirmed(country_list):
         'layout': dict(
             xaxis = {'title':'Observation Date'},
             yaxis = {'title':'Confirmed Cases'},
-            legend={'x': 0, 'y': 1},
-            hovermode='closest'
+            hovermode='closest',title='COVID-19 Confirmed Cases',
+            showlegend=True,
+            legend=dict(
+                x=1,
+                y=1
+            ),
+            margin=dict(l=40, r=0, t=40, b=30)
+
+        )
+    }
+@app.callback(
+    Output('deaths','figure'),
+    [Input('country_list','value')]
+)
+def update_deaths(country_list):  
+    traces = []
+    traces.append(dict(
+            x = df[df['Country/Region']==country_list]['ObservationDate'],
+            y = (df[df['Country/Region']==country_list]['Deaths']).max(),
+            text=f'{country_list}',
+            mode='markers',
+            opacity=0.7,
+            marker=dict(
+                    color='rgb(55, 83, 109)'
+            ),
+        ))
+
+    return {
+        'data' :traces,
+        'layout': dict(
+            xaxis = {'title':'Observation Date'},
+            yaxis = {'title':'Deaths'},
+            hovermode='closest',title='COVID-19 Deaths',
+            showlegend=True,
+            legend=dict(
+                x=1,
+                y=1
+            ),
+            margin=dict(l=40, r=0, t=40, b=30)
+
+        )
+    }
+@app.callback(
+    Output('recovered','figure'),
+    [Input('country_list','value')]
+)
+def update_recovered(country_list):  
+    traces = []
+    traces.append(dict(
+            x = df[df['Country/Region']==country_list]['ObservationDate'],
+            y = (df[df['Country/Region']==country_list]['Recovered']).max(),
+            text=f'{country_list}',
+            mode='markers',
+            opacity=0.7,
+            marker=dict(
+                    color='rgb(55, 83, 109)'
+            ),
+        ))
+
+    return {
+        'data' :traces,
+        'layout': dict(
+            xaxis = {'title':'Observation Date'},
+            yaxis = {'title':'Recovered Cases'},
+            hovermode='closest',title='COVID-19 Recovered Cases',
+            showlegend=True,
+            legend=dict(
+                x=1,
+                y=1
+            ),
+            margin=dict(l=40, r=0, t=40, b=30)
+
         )
     }
 
